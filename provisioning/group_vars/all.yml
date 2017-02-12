@@ -1,0 +1,7 @@
+---
+
+mpi_user: mpiuser
+mpi_data: /srv/mpi_data
+mpi_data_master_public_key_file: "{{ mpi_data }}/.id_rsa.pub"
+
+mpi_hosts_file: /etc/mpi_hosts

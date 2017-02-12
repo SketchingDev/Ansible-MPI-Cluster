@@ -1,0 +1,32 @@
+---
+
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - name: Install Ansible Galaxy dependencies
+      local_action: command ansible-galaxy install geerlingguy.nfs --roles-path ./roles
+
+- hosts: all
+  become: yes
+  roles:
+    - mpi
+  tasks:
+    - include: hosts.yml
+
+- hosts: master
+  become: yes
+  roles:
+     - mpi_master
+
+- hosts: slaves
+  become: yes
+  roles:
+     - mpi_slave
+
+- hosts: master
+  become: yes
+  vars:
+    mpi_tutorial_repo: 'https://github.com/wesleykendall/mpitutorial.git'
+    mpi_tutorial_repo_dest: "{{ mpi_data }}/mpitutorial"
+  tasks:
+    - include: test-mpi.yml
