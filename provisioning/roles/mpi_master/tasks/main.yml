@@ -1,0 +1,42 @@
+---
+
+- name: Create MPI user
+  user:
+    name: "{{ mpi_user }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+
+- name: Save public key to NFS share
+  shell: "cp ~{{ mpi_user }}/.ssh/id_rsa.pub {{ mpi_data_master_public_key_file }}"
+
+- name: Give MPI user access to NFS share
+  file:
+    path: "{{ mpi_data }}"
+    state: directory
+    recurse: yes
+    owner: "{{ mpi_user }}"
+    group: "{{ mpi_user }}"
+    mode: 0755
+
+- name: Generate public ssh host keys for slave nodes so MPI can connect without confirmation
+  shell: ssh-keyscan {{ item }}
+  with_items: "{{ groups['slaves'] }}"
+  register: keyscan_results
+
+- name: Write generated SSH host keys to known_hosts file
+  lineinfile:
+    dest: "~{{ mpi_user }}/.ssh/known_hosts"
+    line: "{{ item.stdout }}"
+    state: present
+    create: yes
+  with_items: "{{ keyscan_results.results }}"
+
+
+- name: Build MPI hosts file listing all nodes to be used in cluster
+  lineinfile:
+    dest: "{{ mpi_hosts_file }}"
+    line: "{{ item }}"
+    state: present
+    create: yes
+  with_items: "{{ groups['all'] }}"

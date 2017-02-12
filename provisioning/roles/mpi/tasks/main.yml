@@ -1,0 +1,10 @@
+---
+
+- name: Install OpenMPI
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - libopenmpi-dev
+    - openmpi-bin
