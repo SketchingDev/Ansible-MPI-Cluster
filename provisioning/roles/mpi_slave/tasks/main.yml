@@ -32,7 +32,7 @@
     key: "{{ slurpfile['content'] | b64decode }}"
 
 # Module above will create authorized_keys file as root user
-- name: Give permission MPI user to access authorized_keys
+- name: Give MPI user permission to access authorized_keys
   file:
     path: "~{{ mpi_user }}/.ssh/authorized_keys"
     owner: "{{ mpi_user }}"
