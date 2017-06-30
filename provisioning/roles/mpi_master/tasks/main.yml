@@ -30,13 +30,14 @@
     line: "{{ item.stdout }}"
     state: present
     create: yes
+    owner: "{{ mpi_user }}"
+    group: "{{ mpi_user }}"
   with_items: "{{ keyscan_results.results }}"
-
 
 - name: Build MPI hosts file listing all nodes to be used in cluster
   lineinfile:
     dest: "{{ mpi_hosts_file }}"
-    line: "{{ item }}"
+    line: "{{ item }} slots=1"
     state: present
     create: yes
   with_items: "{{ groups['all'] }}"
