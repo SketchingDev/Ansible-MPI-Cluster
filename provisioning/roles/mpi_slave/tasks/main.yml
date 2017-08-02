@@ -1,38 +1,37 @@
 ---
 
-- name: Mount shared directory
+- name: Ensure NFS share mounted
   mount:
-    name: "{{ mpi_data }}"
-    src: "{{ master_hostname }}:{{ mpi_data }}"
+    name: "{{ mpi_data_share }}"
+    src: "{{ master_hostname }}:{{ mpi_data_share }}"
     fstype: nfs
     state: mounted
 
-- name: Create MPI user
+- name: Ensure MPI user exists
   user:
     name: "{{ mpi_user }}"
 
-- name: Give MPI user access to NFS share
+- name: Ensure MPI user has permission to access NFS share
   file:
-    path: "{{ mpi_data }}"
+    path: "{{ mpi_data_share }}"
     state: directory
     owner: "{{ mpi_user }}"
     group: "{{ mpi_user }}"
     mode: 0755
 
-
-- name: Read Master's public key
+- name: Read Master's public key from NFS share
   slurp:
-    src: "{{ mpi_data_master_public_key_file }}"
+    src: "{{ shared_master_public_key_file_path }}"
   register: slurpfile
 
-- name: Add Master's public key as authorized key
+- name: Ensure Master's public key is added as authorized key for connecting as MPI user
   authorized_key:
     user: "{{ mpi_user }}"
     state: present
     key: "{{ slurpfile['content'] | b64decode }}"
 
 # Module above will create authorized_keys file as root user
-- name: Give MPI user permission to access authorized_keys
+- name: Ensure MPI user can access its authorized_keys file
   file:
     path: "~{{ mpi_user }}/.ssh/authorized_keys"
     owner: "{{ mpi_user }}"
