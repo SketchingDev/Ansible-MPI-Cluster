@@ -1,0 +1,45 @@
+---
+
+# Procedural process for testing that MPI is working across the cluster. Should perhaps be a script.
+
+- hosts: master
+  become: yes
+  vars:
+    - mpi_tutorial_zip: 'https://github.com/wesleykendall/mpitutorial/archive/master.zip'
+    - mpi_tutorial_repo_dest: "{{ mpi_data_share }}/mpitutorial-master"
+  tasks:
+    - name: Ensure Unzip present
+      apt:
+        name: unzip
+        state: present
+
+    - name: Extract MPI Tutorial project
+      unarchive:
+        src: 'https://github.com/wesleykendall/mpitutorial/archive/master.zip'
+        dest: "{{ mpi_data_share }}"
+        remote_src: yes
+
+    - name: Make Hello World project
+      make:
+        chdir: "{{ mpi_tutorial_repo_dest }}/tutorials/mpi-hello-world/code"
+
+    - name: Run Hello World program
+      shell: "su mpiuser -c 'mpirun --hostfile {{ mpi_hosts_file }} mpi_hello_world'"
+      args:
+        chdir: "{{ mpi_tutorial_repo_dest }}/tutorials/mpi-hello-world/code"
+      register: hello_world_result
+
+    - name: Output result of Hello World program
+      debug:
+        msg: "{{ hello_world_result.stdout_lines }}"
+
+    - name: Processor ran on all slaves
+      assert:
+        that: "hello_world_result.stdout.find('Hello world from processor {{ item }}') != -1"
+        msg: "{{ item }} failed to run the processor. Increase verbosity to more about the error."
+      with_items: "{{ groups['slaves'] }}"
+
+    - name: Clean up after test
+      file:
+        path: "{{ mpi_tutorial_repo_dest }}"
+        state: absent

@@ -1,0 +1,11 @@
+---
+
+- hosts: all
+  become: yes
+  tasks:
+    - include: tasks/create_hosts_file.yml
+
+- hosts: master
+  become: yes
+  roles:
+     - mpi_master

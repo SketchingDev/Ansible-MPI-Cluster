@@ -1,6 +1,6 @@
 ---
 
-- name: Build hosts file
+- name: All hosts are contained in hosts file
   lineinfile:
     dest: /etc/hosts
     regexp: '.*{{ item }}$'
