@@ -1,0 +1,6 @@
+---
+
+- hosts: master
+  become: yes
+  roles:
+      - john_the_ripper

@@ -1,0 +1,8 @@
+---
+
+- hosts: master
+  become: yes
+  tasks:
+    - name: Test John the Ripper with MPI
+      shell: "su mpiuser -c 'mpiexec -np 1 --host {{ item }} {{ john_the_ripper_dest }}/run/john --test=0'"
+      with_items: "{{ groups['slaves'] }}"

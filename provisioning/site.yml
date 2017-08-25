@@ -15,4 +15,7 @@
 
 - include: master.yml
 - include: slaves.yml
-- include: test_cluster.yml
+- include: test_mpi_cluster.yml
+
+- include: john_the_ripper.yml
+- include: test_jtr_cluster.yml

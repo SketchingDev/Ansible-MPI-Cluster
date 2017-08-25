@@ -3,5 +3,6 @@
 mpi_user: mpiuser
 mpi_data_share: /srv/mpi_data_share
 shared_master_public_key_file_path: "{{ mpi_data_share }}/.id_rsa.pub"
-
 mpi_hosts_file: /etc/mpi_hosts
+
+john_the_ripper_dest: "{{ mpi_data_share }}/JohnTheRipper-bleeding-jumbo"

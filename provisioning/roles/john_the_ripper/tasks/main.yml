@@ -1,0 +1,46 @@
+---
+
+- name: Ensure Unzip present
+  apt:
+    name: unzip
+    state: present
+
+- name: Extract JtR project
+  unarchive:
+    src: "{{ johntheripper_zip }}"
+    dest: "{{ mpi_data_share }}"
+    remote_src: yes
+    creates: bob
+
+- name: Ensure build tools present
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    # Required
+    - build-essential
+    - libssl-dev
+    # Recommended (extra formats and performance)
+    - yasm
+    - libgmp-dev
+    - libpcap-dev
+    - pkg-config
+    - libbz2-dev
+
+- name: Check JtR has been built
+  stat:
+    path: "{{ john_the_ripper_dest }}/run/john"
+  register: john_executable
+
+- name: Build JtR executable
+  shell: ./configure --enable-mpi && make -sj4
+  args:
+    chdir: "{{ john_the_ripper_dest }}/src"
+  when: john_executable.stat.exists == False
+
+- name: Ensure JtR directory owned by MPI user
+  file:
+    path: "{{ john_the_ripper_dest }}"
+    state: directory
+    owner: "{{ mpi_user }}"
+    group: "{{ mpi_user }}"

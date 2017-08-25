@@ -1,0 +1,6 @@
+---
+
+johntheripper_zip: 'https://github.com/magnumripper/JohnTheRipper/archive/bleeding-jumbo.zip'
+
+johntheripper_owner: root
+johntheripper_dest: /opt/JohnTheRipper
