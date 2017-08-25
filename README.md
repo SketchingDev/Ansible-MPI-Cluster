@@ -6,15 +6,16 @@ Ansible project to automatically configure APT-based hosts to act as master/slav
 
 ## Creating a cluster
 
-To configure your Ubuntu machines as an MPI cluster first create an [inventory file](http://docs.ansible.com/ansible/intro_inventory.html) matching the template:
+To configure your Ubuntu machines as an MPI cluster first create an [inventory file](http://docs.ansible.com/ansible/intro_inventory.html) matching the following template. Slot numbers for
+OpenMPI hosts can be defined if required.
 
 ```yml
 master 10.211.55.178
 
 [slaves]
-10.211.55.177
-10.211.55.175
-10.211.55.176
+10.211.55.177 slots=2
+10.211.55.175 # Defaults to slot=1 if not defined
+10.211.55.176 slots=4
 ```
 
 Execute the playbooks against the hosts:

@@ -48,7 +48,8 @@
 - name: Ensure all hosts listed in MPI hosts file with slot availability
   lineinfile:
     dest: "{{ mpi_hosts_file }}"
-    line: "{{ item }} slots=1"
+    regexp: "^{{item}} "
+    line: "{{ item }} slots={{ hostvars[item]['slots'] | default(1) }}"
     state: present
     create: yes
   with_items: "{{ groups['all'] }}"
