@@ -54,3 +54,7 @@ Or you can let Vagrant do the provisioning:
 ```bash
 vagrant provision
 ```
+
+### Amount of slaves
+
+By default running `vagrant up` will create two slave nodes. This can be changed via the TOTAL_SLAVES variable in the `Vagrantfile`.
